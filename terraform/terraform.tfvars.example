@@ -1,0 +1,17 @@
+# Terraform Variables Example
+# Copy this file to terraform.tfvars and fill in your values
+# NEVER commit terraform.tfvars to git!
+
+environment = "prod"
+location    = "eastus"
+project_name = "betania-content"
+
+# Secrets - Fill these in
+openai_api_key         = "sk-..."
+wordpress_username     = "your_username"
+wordpress_password     = "your_app_password"
+wordpress_db_host      = "your_db_host"
+wordpress_db_name      = "your_db_name"
+wordpress_db_user      = "your_db_user"
+wordpress_db_password  = "your_db_password"
+sendgrid_api_key       = "SG...."
