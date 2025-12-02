@@ -27,7 +27,8 @@ class EmailService:
         subscribers: List[Dict],
         subject: str,
         intro: str,
-        articles: List[Dict]
+        articles: List[Dict],
+        practice_task: str | None = None
     ) -> int:
         """
         Send newsletter to all subscribers
@@ -41,7 +42,7 @@ class EmailService:
         Returns:
             Number of emails sent successfully
         """
-        html_content = self._generate_newsletter_html(intro, articles)
+        html_content = self._generate_newsletter_html(intro, articles, practice_task)
 
         sent_count = 0
         failed = []
@@ -162,7 +163,7 @@ class EmailService:
             logger.error(f"✗ Error sending confirmation to {email}: {str(e)}")
             raise
 
-    def _generate_newsletter_html(self, intro: str, articles: List[Dict]) -> str:
+    def _generate_newsletter_html(self, intro: str, articles: List[Dict], practice_task: str | None = None) -> str:
         """Generate HTML for newsletter"""
         template = """
         <!DOCTYPE html>
@@ -181,6 +182,13 @@ class EmailService:
                 <p style="font-size: 16px; color: #555;">{{ intro }}</p>
 
                 <hr style="border: none; border-top: 2px solid #667eea; margin: 30px 0;">
+
+                {% if practice_task %}
+                <div style="background: #f9fafb; border-left: 4px solid #667eea; padding: 20px; margin-bottom: 30px; border-radius: 4px;">
+                    <h2 style="margin: 0 0 10px 0; font-size: 18px; color: #333;">🧠 Weekly Practice Task</h2>
+                    <p style="color: #555; margin: 0; white-space: pre-line;">{{ practice_task }}</p>
+                </div>
+                {% endif %}
 
                 {% for article in articles %}
                 <div style="margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #eee;">
@@ -226,6 +234,7 @@ class EmailService:
         html = jinja_template.render(
             intro=intro,
             articles=articles,
+            practice_task=practice_task,
             wordpress_url=Config.WORDPRESS_URL,
             year=datetime.now().year
         )

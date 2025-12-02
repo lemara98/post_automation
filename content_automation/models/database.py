@@ -50,8 +50,8 @@ class Database:
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS newsletter_subscribers (
                     id INT AUTO_INCREMENT PRIMARY KEY,
-                    email VARCHAR(255) NOT NULL UNIQUE,
-                    name VARCHAR(255),
+                    email VARCHAR(191) NOT NULL UNIQUE,
+                    name VARCHAR(191),
                     subscribed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     confirmed BOOLEAN DEFAULT FALSE,
                     confirmation_token VARCHAR(64),
@@ -66,14 +66,14 @@ class Database:
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS published_articles (
                     id INT AUTO_INCREMENT PRIMARY KEY,
-                    title VARCHAR(500) NOT NULL,
-                    source_url VARCHAR(1000) UNIQUE,
+                    title VARCHAR(255) NOT NULL,
+                    source_url VARCHAR(255) UNIQUE,
                     wordpress_post_id INT,
-                    wordpress_url VARCHAR(1000),
+                    wordpress_url VARCHAR(255),
                     published_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    source_name VARCHAR(255),
+                    source_name VARCHAR(191),
                     tags TEXT,
-                    INDEX idx_source_url (source_url(255)),
+                    INDEX idx_source_url (source_url),
                     INDEX idx_published_at (published_at)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
             """)

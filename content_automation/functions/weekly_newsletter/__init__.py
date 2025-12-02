@@ -81,6 +81,10 @@ def main(mytimer: func.TimerRequest) -> None:
         logger.info("✍️  Generating newsletter intro...")
         intro = ai_generator.generate_newsletter_intro(top_articles)
 
+        # Step 4b: Generate weekly practice task
+        logger.info("🧠 Generating weekly practice task...")
+        practice_task = ai_generator.generate_practice_task(top_articles)
+
         # Step 5: Get all active subscribers
         logger.info("👥 Fetching subscribers...")
         subscribers = subscriber_model.get_active_subscribers()
@@ -110,7 +114,8 @@ def main(mytimer: func.TimerRequest) -> None:
             subscribers=subscribers,
             subject=subject,
             intro=intro,
-            articles=newsletter_articles
+            articles=newsletter_articles,
+            practice_task=practice_task
         )
 
         logger.info(f"\n🎉 Weekly newsletter completed!")

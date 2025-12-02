@@ -7,6 +7,7 @@ import requests
 from typing import Dict, List, Optional
 from base64 import b64encode
 from config import Config
+from markdown import markdown  # Convert Markdown to HTML
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -68,7 +69,7 @@ class WordPressClient:
 
         Args:
             title: Post title
-            content: Post content (HTML or markdown)
+            content: Post content (Markdown or HTML). Markdown will be converted to HTML.
             status: Post status ('publish', 'draft', 'pending')
             excerpt: Post excerpt
             tags: List of tag names
@@ -78,6 +79,13 @@ class WordPressClient:
         Returns:
             Created post data from WordPress
         """
+        # Convert Markdown to HTML if needed
+        if content and ("<p" not in content and "<div" not in content and "<h1" not in content and "<h2" not in content):
+            try:
+                content = markdown(content)
+            except Exception as e:
+                logger.warning(f"Failed to convert Markdown to HTML, sending raw content: {str(e)}")
+
         # Prepare post data
         post_data = {
             "title": title,
