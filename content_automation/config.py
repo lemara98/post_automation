@@ -41,35 +41,30 @@ class Config:
     MAX_ARTICLES_PER_DAY = int(os.getenv("MAX_ARTICLES_PER_DAY", "5"))
     MAX_NEWSLETTER_ARTICLES = int(os.getenv("MAX_NEWSLETTER_ARTICLES", "5"))
 
-    # RSS Feeds - Curated for .NET, Python, AI, and Software Industry
+    # RSS Feeds - High-quality .NET content sources
     RSS_FEEDS = [
-        # .NET Specific
-        "https://devblogs.microsoft.com/dotnet/feed/",
-        "https://www.infoq.com/dotnet/feed",
-        "https://www.reddit.com/r/dotnet/.rss",
+        # Top .NET Blogs - Clean Architecture, Patterns, Best Practices (WORKING)
+        "https://code-maze.com/feed/",                          # Code Maze - .NET tutorials, EF Core, APIs ✅
+        "https://andrewlock.net/rss.xml",                       # Andrew Lock - ASP.NET Core internals ✅
+        "https://exceptionnotfound.net/feed/",                  # Exception Not Found - Clean code patterns ✅
 
-        # Python
-        "https://www.python.org/blogs/feed/",
-        "https://realpython.com/atom.xml",
-        "https://www.reddit.com/r/Python/.rss",
+        # Official Microsoft .NET (WORKING)
+        "https://devblogs.microsoft.com/dotnet/feed/",          # Official .NET Blog - Updates, performance ✅
 
-        # AI & Machine Learning
-        "https://openai.com/blog/rss/",
-        "https://ai.googleblog.com/feeds/posts/default",
-        "https://blogs.microsoft.com/ai/feed/",
-        "https://www.reddit.com/r/MachineLearning/.rss",
+        # Additional Quality .NET Sources (WORKING)
+        "https://www.meziantou.net/feed.xml",                   # Gérald Barré - .NET tips & tricks ✅
+        "https://blog.stephencleary.com/feed/",                 # Stephen Cleary - Async/await expert ✅
+        "https://www.hanselman.com/blog/feed/rss/",             # Scott Hanselman - .NET & Web development ✅
 
-        # General Software Industry
-        "https://techcrunch.com/feed/",
-        "https://news.ycombinator.com/rss",
-        "https://www.theverge.com/rss/index.xml",
-        "https://stackoverflow.blog/feed/",
-        "https://github.blog/feed/",
-        "https://dev.to/feed",
+        # Community & Discussion (WORKING)
+        "https://www.reddit.com/r/dotnet/.rss",                 # Reddit .NET community ✅
+        "https://www.reddit.com/r/csharp/.rss",                 # Reddit C# community ✅
 
-        # Software Engineering
-        "https://martinfowler.com/feed.atom",
-        "https://www.joelonsoftware.com/feed/",
+        # NOTE: These blogs may not have recent posts, but will be included when they publish:
+        # - Ardalis (Steve Smith): https://ardalis.com/blog/rss.xml
+        # - Khalid Abuhakmeh: https://khalidabuhakmeh.com/rss
+        # - Code with Mukesh: https://codewithmukesh.com/blog/rss.xml
+        # - Milan Jovanović: No RSS feed available (newsletter only)
     ]
 
     @classmethod
