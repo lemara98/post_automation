@@ -27,7 +27,7 @@ class AIContentGenerator:
             logger.info("✓ Using Azure OpenAI")
         elif Config.OPENAI_API_KEY:
             self.client = OpenAI(api_key=Config.OPENAI_API_KEY)
-            self.model = "gpt-4-turbo-preview"
+            self.model = "gpt-4o-mini"  # Using gpt-4o-mini (cheaper and faster)
             logger.info("✓ Using OpenAI")
         else:
             raise ValueError("No OpenAI API key configured")
@@ -47,7 +47,7 @@ class AIContentGenerator:
         Returns:
             Dict with 'title', 'content', 'excerpt', 'tags'
         """
-        prompt = f"""You are a tech content writer for betania.io, a blog for {target_audience}.
+        prompt = f"""You are a tech content writer for betania.io, a blog for {target_audience}, with a strong focus on practical .NET development (including .NET 8/9/10), performance tuning, and real-world tips.
 
 Your task is to write an engaging blog post based on this article:
 
@@ -59,8 +59,8 @@ Summary: {article.summary}
 Guidelines:
 1. Write a catchy, SEO-friendly title (different from the original)
 2. Create an engaging 800-1200 word blog post
-3. Add your own insights and analysis
-4. Use clear headings and structure
+3. Add your own insights and analysis, especially how this relates to modern .NET development where relevant
+4. Use clear headings and structure (H2/H3-style markdown headings)
 5. Write in a professional but conversational tone
 6. Include a brief excerpt (2-3 sentences)
 7. Suggest 3-5 relevant tags
@@ -114,7 +114,7 @@ SOURCE:
         Returns:
             LinkedIn post text (ready to paste)
         """
-        prompt = f"""Create a professional LinkedIn post about this article:
+        prompt = f"""Create a professional LinkedIn post about this article, framed for .NET developers where possible:
 
 Title: {article.title}
 Source: {article.source}
@@ -125,7 +125,7 @@ Guidelines:
 1. Keep it under 200 words
 2. Start with a hook that grabs attention
 3. Add your professional insight or opinion
-4. Include 2-3 relevant hashtags
+4. Include 2-3 relevant hashtags (prioritize .NET / C# / ASP.NET / performance / cloud-related tags when appropriate)
 5. End with the link to the original article
 6. Professional but conversational tone
 
@@ -175,16 +175,16 @@ Write only the post text, nothing else.
             for i, article in enumerate(articles)
         ])
 
-        prompt = f"""You are selecting the top {top_n} most valuable articles for a weekly newsletter targeting software engineers interested in .NET, Python, AI, and software industry trends.
+        prompt = f"""You are selecting the top {top_n} most valuable articles for a weekly newsletter targeting software engineers, with a strong focus on .NET (including .NET 8/9/10), C#, and practical engineering tips. You may also include occasional Python, AI, or industry pieces when they are highly valuable.
 
 Articles:
 {article_list}
 
 Select the {top_n} most valuable articles based on:
-1. Relevance to software engineers
-2. Actionable insights or learning value
+1. Relevance to .NET developers and software engineers
+2. Actionable insights or learning value (tips, how-tos, concrete examples)
 3. Diversity of topics (don't pick 5 articles about the same thing)
-4. Timeliness and importance
+4. Timeliness and importance (new .NET releases, tooling, notable changes)
 5. Quality of source
 
 Respond with ONLY the article numbers in order of priority, separated by commas.
@@ -263,6 +263,51 @@ Write only the introduction, nothing else.
             logger.error(f"✗ Error generating newsletter intro: {str(e)}")
             return "Welcome to this week's edition of the Betania Tech Newsletter! Here are the top 5 stories you shouldn't miss."
 
+    def generate_practice_task(self, articles: List[Article]) -> str:
+        """
+        Generate a small weekly practice task for subscribers
+
+        The task should encourage thinking and hands-on practice,
+        ideally inspired by one of the .NET-related articles.
+        """
+        titles = "\n".join([f"- {article.title}" for article in articles])
+
+        prompt = f"""You are a senior .NET engineer and mentor.
+
+Using the themes from these articles:
+{titles}
+
+Create ONE simple but interesting weekly practice task for newsletter subscribers.
+
+Guidelines:
+1. Focus on .NET (preferably .NET 8/9/10) or general software design thinking that a .NET developer can apply.
+2. The task should be solvable in 20-30 minutes.
+3. Make it concrete (e.g., "Create a small console app that...", "Refactor an existing method to use...", "Write a small LINQ query that...").
+4. Emphasize reasoning and design, not just syntax.
+5. Do NOT include the solution, only the task description.
+
+Write 3-6 sentences. Start with a short title like: "Weekly Practice: [short description]".
+"""
+
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are a senior .NET mentor creating weekly practice tasks."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.8,
+                max_tokens=250
+            )
+
+            task = response.choices[0].message.content.strip()
+            logger.info("✓ Generated weekly practice task")
+            return task
+
+        except Exception as e:
+            logger.error(f"✗ Error generating practice task: {str(e)}")
+            return "Weekly Practice: Take a small piece of code you wrote recently and refactor it using a modern .NET feature (such as pattern matching, records, or LINQ). Focus on making the code easier to read and reason about, and write down what changed and why."
+
     def _parse_blog_response(self, response: str, source_url: str) -> Dict[str, str]:
         """Parse the AI-generated blog post response"""
         sections = {
@@ -303,10 +348,18 @@ Write only the introduction, nothing else.
         # Clean up
         sections['title'] = sections['title'].strip()
         sections['excerpt'] = sections['excerpt'].strip()
-        sections['content'] = sections['content'].strip()
+        raw_content = sections['content'].strip()
 
-        # Add source attribution to content
-        sections['content'] += f"\n\n---\n\n**Source:** [{source_url}]({source_url})"
+        # Wrap content in nicer HTML structure for WordPress
+        html_content = f"""<div class="betania-article">
+<p class="lead">{sections['excerpt']}</p>
+{raw_content}
+
+<hr />
+<p><strong>Source:</strong> <a href="{source_url}">{source_url}</a></p>
+</div>"""
+
+        sections['content'] = html_content
 
         return sections
 
