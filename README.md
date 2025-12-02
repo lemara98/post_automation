@@ -1,87 +1,100 @@
-# Betania Content Automation System
+# Betania Content Automation
 
-🤖 Automated content pipeline for [betania.io](https://betania.io)
+Automated .NET blog content system for [betania.io](https://betania.io)
 
-## Features
+## What It Does
 
-- ✅ **Daily Blog Automation** - Auto-fetch, generate, and publish tech articles
-- ✅ **AI-Powered Content** - GPT-4 generates engaging blog posts and LinkedIn content
-- ✅ **Weekly Newsletter** - Top 5 curated articles sent to subscribers every Sunday
-- ✅ **LinkedIn Queue** - Pre-generated posts ready for manual publishing
-- ✅ **WordPress Integration** - Direct publishing to betania.io
-- ✅ **Email Subscriptions** - WordPress plugin for newsletter signups
+1. **Fetches** articles from high-quality .NET blogs (Code Maze, Andrew Lock, Microsoft .NET Blog, etc.)
+2. **Generates** blog posts using AI (GPT-4o-mini)
+3. **Publishes** automatically to WordPress as drafts
+4. **Creates** LinkedIn posts for manual review
+5. **Sends** weekly newsletter to subscribers
 
-## Quick Start
+## How to Run
+
+### 1. Setup (First Time Only)
 
 ```bash
+# Install Python dependencies
 cd content_automation
 pip install -r requirements.txt
+
+# Configure credentials
 cp .env.example .env
-# Edit .env with your credentials
+nano .env  # Add your API keys
+```
+
+**Required credentials in `.env`:**
+- `OPENAI_API_KEY` - From https://platform.openai.com/api-keys
+- `WORDPRESS_URL`, `WORDPRESS_USERNAME`, `WORDPRESS_PASSWORD`
+- `WORDPRESS_DB_HOST`, `WORDPRESS_DB_NAME`, `WORDPRESS_DB_USER`, `WORDPRESS_DB_PASSWORD`
+- `SENDGRID_API_KEY` - From https://sendgrid.com/
+
+### 2. Run Daily Content Generation
+
+```bash
+source venv/bin/activate
+cd content_automation
+python functions/daily_content/__init__.py
+```
+
+This will:
+- Fetch latest articles from RSS feeds
+- Generate 5 blog posts with AI
+- Publish to WordPress as drafts
+- Create LinkedIn posts in database
+
+### 3. Run Weekly Newsletter
+
+```bash
+source venv/bin/activate
+cd content_automation
+python functions/weekly_newsletter/__init__.py
+```
+
+This will:
+- Select top 5 articles of the week
+- Generate newsletter email
+- Send to all subscribers
+
+## Test Everything
+
+```bash
+source venv/bin/activate
+cd content_automation
 python test_setup.py
 ```
 
-📖 **Full documentation**: See [README_SETUP.md](content_automation/README_SETUP.md)
+## RSS Feeds
 
-## Architecture
+Currently scraping:
+- Code Maze (.NET tutorials)
+- Andrew Lock (ASP.NET Core internals)
+- Microsoft .NET Blog (official updates)
+- Scott Hanselman (.NET & Web)
+- Stephen Cleary (async/await)
+- Reddit r/dotnet & r/csharp
 
-```
-RSS Feeds → AI (GPT-4) → WordPress + Database → Email Newsletter
-                              ↓
-                        LinkedIn Queue
-```
+Edit feeds in `content_automation/config.py`
 
 ## Tech Stack
 
-- **Python 3.11+** - Core automation
-- **Azure Functions** - Serverless hosting
-- **OpenAI GPT-4** - Content generation
-- **WordPress REST API** - Publishing
-- **SendGrid** - Email delivery
-- **MySQL** - Subscriber management
-
-## Project Structure
-
-```
-content_automation/
-├── services/           # Core services
-│   ├── rss_aggregator.py
-│   ├── ai_content_generator.py
-│   ├── wordpress_client.py
-│   └── email_service.py
-├── functions/          # Azure Functions
-│   ├── daily_content/
-│   └── weekly_newsletter/
-├── models/             # Database models
-├── wordpress/          # WordPress plugin
-└── config.py          # Configuration
-
-```
+- Python 3.10+
+- OpenAI GPT-4o-mini
+- WordPress REST API
+- SendGrid (email)
+- MySQL (subscribers)
 
 ## Deployment
 
-### Quick Deploy (3 options)
-
-1. **GitHub Actions** (Recommended) - See [DEPLOYMENT_QUICKSTART.md](DEPLOYMENT_QUICKSTART.md)
-2. **Azure DevOps** - See [CICD_SETUP.md](CICD_SETUP.md)
-3. **Manual** - See [README_SETUP.md](README_SETUP.md)
-
-### Infrastructure as Code
-
-- **Terraform**: [terraform/main.tf](terraform/main.tf)
-- **CI/CD**: [.github/workflows/deploy.yml](.github/workflows/deploy.yml) or [azure-pipelines.yml](azure-pipelines.yml)
+For automated runs, deploy to Azure Functions (see `terraform/` folder) or set up cron jobs.
 
 ## Cost
 
-**Monthly: $15-25** (mostly OpenAI API)
+- OpenAI: ~$5-10/month (depending on usage)
+- SendGrid: Free (up to 100 emails/day)
+- Azure Functions: Free tier available
 
-- OpenAI GPT-4: $22.50 (main cost)
-- Azure Functions: $0 (free tier)
-- SendGrid: $0 (free tier up to 750 subscribers)
-- Everything else: ~$0.01
+---
 
-📊 **Detailed breakdown**: [COST_BREAKDOWN.md](COST_BREAKDOWN.md)
-
-## License
-
-MIT
+Made with ❤️ for .NET developers
