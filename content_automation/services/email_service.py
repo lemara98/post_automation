@@ -1,13 +1,22 @@
 """
-Email Service using SendGrid
+Email Service supporting both SendGrid and Gmail SMTP
 Handles sending newsletters and confirmation emails
 """
 import logging
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from typing import List, Dict
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, Email, To, Content
 from jinja2 import Template
 from config import Config
+
+# Try to import SendGrid (optional)
+try:
+    from sendgrid import SendGridAPIClient
+    from sendgrid.helpers.mail import Mail, Email, To, Content
+    SENDGRID_AVAILABLE = True
+except ImportError:
+    SENDGRID_AVAILABLE = False
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -17,10 +26,62 @@ class EmailService:
     """Email service for newsletters and transactional emails"""
 
     def __init__(self):
-        """Initialize SendGrid client"""
-        self.client = SendGridAPIClient(api_key=Config.SENDGRID_API_KEY)
-        self.from_email = Email(Config.SENDGRID_FROM_EMAIL, Config.SENDGRID_FROM_NAME)
-        logger.info("✓ Email service initialized")
+        """Initialize email service (SendGrid or Gmail SMTP based on config)"""
+        self.provider = Config.EMAIL_PROVIDER.lower()
+
+        if self.provider == "gmail":
+            # Gmail SMTP configuration
+            self.smtp_server = "smtp.gmail.com"
+            self.smtp_port = 587
+            self.from_email_addr = Config.GMAIL_EMAIL
+            self.from_name = Config.GMAIL_FROM_NAME
+            self.password = Config.GMAIL_APP_PASSWORD
+            logger.info("✓ Email service initialized (Gmail SMTP)")
+        else:
+            # SendGrid configuration
+            if not SENDGRID_AVAILABLE:
+                raise ImportError("SendGrid library not installed. Run: pip install sendgrid")
+            self.sendgrid_client = SendGridAPIClient(api_key=Config.SENDGRID_API_KEY)
+            self.from_email_addr = Config.SENDGRID_FROM_EMAIL
+            self.from_name = Config.SENDGRID_FROM_NAME
+            logger.info("✓ Email service initialized (SendGrid)")
+
+    def _send_email_gmail(self, to_email: str, to_name: str, subject: str, html_content: str) -> bool:
+        """Send email via Gmail SMTP"""
+        try:
+            msg = MIMEMultipart('alternative')
+            msg['From'] = f"{self.from_name} <{self.from_email_addr}>"
+            msg['To'] = f"{to_name} <{to_email}>" if to_name else to_email
+            msg['Subject'] = subject
+
+            html_part = MIMEText(html_content, 'html')
+            msg.attach(html_part)
+
+            with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
+                server.starttls()
+                server.login(self.from_email_addr, self.password)
+                server.send_message(msg)
+
+            return True
+        except Exception as e:
+            logger.error(f"Gmail SMTP error: {str(e)}")
+            return False
+
+    def _send_email_sendgrid(self, to_email: str, to_name: str, subject: str, html_content: str) -> bool:
+        """Send email via SendGrid"""
+        try:
+            message = Mail(
+                from_email=Email(self.from_email_addr, self.from_name),
+                to_emails=To(to_email, to_name),
+                subject=subject,
+                html_content=Content("text/html", html_content)
+            )
+
+            response = self.sendgrid_client.send(message)
+            return response.status_code in [200, 201, 202]
+        except Exception as e:
+            logger.error(f"SendGrid error: {str(e)}")
+            return False
 
     def send_newsletter(
         self,
@@ -62,21 +123,27 @@ class EmailService:
                 </div>
                 """
 
-                message = Mail(
-                    from_email=self.from_email,
-                    to_emails=To(subscriber['email'], subscriber.get('name')),
-                    subject=subject,
-                    html_content=Content("text/html", personalized_html)
-                )
+                # Send via chosen provider
+                if self.provider == "gmail":
+                    success = self._send_email_gmail(
+                        to_email=subscriber['email'],
+                        to_name=subscriber.get('name', ''),
+                        subject=subject,
+                        html_content=personalized_html
+                    )
+                else:
+                    success = self._send_email_sendgrid(
+                        to_email=subscriber['email'],
+                        to_name=subscriber.get('name', ''),
+                        subject=subject,
+                        html_content=personalized_html
+                    )
 
-                response = self.client.send(message)
-
-                if response.status_code in [200, 201, 202]:
+                if success:
                     sent_count += 1
                     logger.info(f"✓ Sent newsletter to {subscriber['email']}")
                 else:
                     failed.append(subscriber['email'])
-                    logger.warning(f"✗ Failed to send to {subscriber['email']}: {response.status_code}")
 
             except Exception as e:
                 failed.append(subscriber['email'])
@@ -111,57 +178,100 @@ class EmailService:
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-                <h1 style="color: white; margin: 0;">Welcome to Betania Tech Newsletter!</h1>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #222; max-width: 600px; margin: 0 auto; padding: 20px; background: #ffffff;">
+            <!-- Header with Betania logo -->
+            <div style="background: #ffffff; padding: 50px 30px 40px; text-align: center; border-bottom: 3px solid #00d4ff;">
+                <!-- Inline SVG Triangle Logo -->
+                <svg width="100" height="100" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 20px;">
+                    <path d="M250 50 L450 400 L50 400 Z" fill="none" stroke="#00d4ff" stroke-width="6" opacity="0.25"/>
+                    <path d="M250 100 L400 360 L100 360 Z" fill="none" stroke="#00d4ff" stroke-width="5" opacity="0.4"/>
+                    <path d="M250 150 L350 320 L150 320 Z" fill="none" stroke="#00d4ff" stroke-width="4" opacity="0.6"/>
+                    <path d="M250 200 L300 280 L200 280 Z" fill="none" stroke="#00d4ff" stroke-width="3.5" opacity="0.85"/>
+                    <path d="M200 280 L250 360 L150 360 Z" fill="none" stroke="#00d4ff" stroke-width="3.5" opacity="0.85"/>
+                    <path d="M300 280 L350 360 L250 360 Z" fill="none" stroke="#00d4ff" stroke-width="3.5" opacity="0.85"/>
+                    <line x1="60" y1="405" x2="440" y2="405" stroke="#00d4ff" stroke-width="1.5" opacity="0.3"/>
+                </svg>
+
+                <h1 style="color: #000000; margin: 0 0 10px 0; font-size: 38px; font-weight: 700; letter-spacing: 5px;">
+                    BETANIA
+                </h1>
+                <p style="color: #00d4ff; margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">
+                    Welcome to the Newsletter!
+                </p>
             </div>
 
-            <div style="background: #fff; padding: 30px; border: 1px solid #ddd; border-top: none; border-radius: 0 0 10px 10px;">
-                <p>Hi {name or 'there'},</p>
+            <div style="background: #fff; padding: 40px 30px;">
+                <p style="font-size: 18px; color: #000; font-weight: 600; margin-top: 0;">Hi {name or 'there'},</p>
 
-                <p>Thanks for subscribing to the Betania Tech Newsletter! You're one step away from getting the top 5 software engineering news every week.</p>
+                <p style="font-size: 16px; color: #444; line-height: 1.8;">
+                    Thanks for subscribing to the <strong>Betania Tech Newsletter</strong>! You're one step away from getting weekly .NET & software engineering insights delivered to your inbox.
+                </p>
 
-                <p>Please confirm your email address by clicking the button below:</p>
+                <p style="font-size: 16px; color: #444; line-height: 1.8;">
+                    Please confirm your email address by clicking the button below:
+                </p>
 
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="{confirmation_url}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
-                        Confirm Subscription
+                <div style="text-align: center; margin: 35px 0;">
+                    <a href="{confirmation_url}" style="
+                        display: inline-block;
+                        background: #00d4ff;
+                        color: #000;
+                        padding: 16px 48px;
+                        text-decoration: none;
+                        border-radius: 6px;
+                        font-weight: 700;
+                        font-size: 16px;
+                        border: 2px solid #00d4ff;
+                    ">
+                        ✓ Confirm Subscription
                     </a>
                 </div>
 
-                <p>Or copy and paste this link into your browser:</p>
-                <p style="color: #667eea; word-break: break-all;">{confirmation_url}</p>
+                <p style="font-size: 14px; color: #888; line-height: 1.6;">
+                    Or copy and paste this link into your browser:
+                </p>
+                <p style="color: #00d4ff; word-break: break-all; font-size: 13px; background: #f0fdff; padding: 12px; border-radius: 4px; border: 1px solid #00d4ff;">
+                    {confirmation_url}
+                </p>
 
-                <p style="margin-top: 30px; color: #666; font-size: 14px;">
+                <hr style="border: none; border-top: 2px solid #f0f0f0; margin: 35px 0;">
+
+                <p style="color: #888; font-size: 14px; line-height: 1.6;">
                     If you didn't subscribe to this newsletter, you can safely ignore this email.
                 </p>
             </div>
 
-            <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
-                <p>Betania.io - Tech insights for software engineers</p>
+            <div style="background: #fff; padding: 25px; text-align: center; border-top: 2px solid #f0f0f0;">
+                <p style="color: #888; font-size: 13px; margin: 0; line-height: 1.6;">
+                    © 2024 Betania.io · All rights reserved<br>
+                    <span style="font-size: 11px; color: #aaa;">Delivering quality .NET content to developers worldwide</span>
+                </p>
             </div>
         </body>
         </html>
         """
 
-        try:
-            message = Mail(
-                from_email=self.from_email,
-                to_emails=To(email, name),
+        # Send via chosen provider
+        if self.provider == "gmail":
+            success = self._send_email_gmail(
+                to_email=email,
+                to_name=name,
                 subject="Confirm your subscription to Betania Tech Newsletter",
-                html_content=Content("text/html", html_content)
+                html_content=html_content
+            )
+        else:
+            success = self._send_email_sendgrid(
+                to_email=email,
+                to_name=name,
+                subject="Confirm your subscription to Betania Tech Newsletter",
+                html_content=html_content
             )
 
-            response = self.client.send(message)
-
-            if response.status_code in [200, 201, 202]:
-                logger.info(f"✓ Sent confirmation email to {email}")
-            else:
-                logger.warning(f"✗ Failed to send confirmation to {email}: {response.status_code}")
-
-        except Exception as e:
-            logger.error(f"✗ Error sending confirmation to {email}: {str(e)}")
-            raise
+        if success:
+            logger.info(f"✓ Sent confirmation email to {email}")
+        else:
+            logger.warning(f"✗ Failed to send confirmation to {email}")
+            raise Exception(f"Failed to send confirmation email to {email}")
 
     def _generate_newsletter_html(self, intro: str, articles: List[Dict], practice_task: str | None = None) -> str:
         """Generate HTML for newsletter"""
@@ -172,100 +282,93 @@ class EmailService:
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5;">
-            <!-- Header with background logo -->
-            <div style="
-                background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%),
-                            url('https://raw.githubusercontent.com/yourusername/betania-assets/main/logo-bg.png') center/cover;
-                background-color: #667eea;
-                padding: 60px 30px;
-                text-align: center;
-                border-radius: 12px 12px 0 0;
-                position: relative;
-                overflow: hidden;
-            ">
-                <!-- Subtle pattern overlay -->
-                <div style="
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE4YzMuMzEgMCA2IDIuNjkgNiA2cy0yLjY5IDYtNiA2LTYtMi42OS02LTYgMi42OS02IDYtNiIvPjwvZz48L2c+PC9zdmc+');
-                    opacity: 0.3;
-                "></div>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #222; max-width: 600px; margin: 0 auto; padding: 20px; background: #ffffff;">
+            <!-- Header with Betania triangle logo -->
+            <div style="background: #ffffff; padding: 50px 30px 40px; text-align: center; border-bottom: 3px solid #00d4ff;">
+                <!-- Inline SVG Triangle Logo -->
+                <svg width="100" height="100" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 20px;">
+                    <!-- Outer triangle with tech effect -->
+                    <path d="M250 50 L450 400 L50 400 Z" fill="none" stroke="#00d4ff" stroke-width="6" opacity="0.25"/>
+                    <!-- Second triangle -->
+                    <path d="M250 100 L400 360 L100 360 Z" fill="none" stroke="#00d4ff" stroke-width="5" opacity="0.4"/>
+                    <!-- Third triangle -->
+                    <path d="M250 150 L350 320 L150 320 Z" fill="none" stroke="#00d4ff" stroke-width="4" opacity="0.6"/>
+                    <!-- Inner Triforce triangles -->
+                    <path d="M250 200 L300 280 L200 280 Z" fill="none" stroke="#00d4ff" stroke-width="3.5" opacity="0.85"/>
+                    <path d="M200 280 L250 360 L150 360 Z" fill="none" stroke="#00d4ff" stroke-width="3.5" opacity="0.85"/>
+                    <path d="M300 280 L350 360 L250 360 Z" fill="none" stroke="#00d4ff" stroke-width="3.5" opacity="0.85"/>
+                    <!-- Circuit lines -->
+                    <line x1="60" y1="405" x2="440" y2="405" stroke="#00d4ff" stroke-width="1.5" opacity="0.3"/>
+                </svg>
 
-                <!-- Logo (optional - you can add an actual logo image URL) -->
-                <!-- <img src="https://betania.io/logo.png" alt="Betania" style="width: 80px; height: auto; margin-bottom: 15px; position: relative; z-index: 1;" /> -->
-
-                <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 600; letter-spacing: -0.5px; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h1 style="color: #000000; margin: 0 0 10px 0; font-size: 38px; font-weight: 700; letter-spacing: 5px;">
                     BETANIA
                 </h1>
-                <p style="color: rgba(255,255,255,0.95); margin: 8px 0 0 0; font-size: 15px; font-weight: 400; letter-spacing: 0.5px; position: relative; z-index: 1;">
+                <p style="color: #00d4ff; margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">
                     Your Weekly .NET & Software Engineering Digest
                 </p>
             </div>
 
-            <div style="background: #fff; padding: 40px 30px; border: 1px solid #e5e5e5; border-top: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                <p style="font-size: 16px; color: #555; line-height: 1.7; margin-top: 0;">{{ intro }}</p>
+            <div style="background: #fff; padding: 40px 30px;">
+                <p style="font-size: 16px; color: #444; line-height: 1.8; margin-top: 0;">{{ intro }}</p>
 
-                <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 35px 0;">
+                <hr style="border: none; border-top: 2px solid #f0f0f0; margin: 35px 0;">
 
                 {% if practice_task %}
-                <div style="background: linear-gradient(to right, #f8f9ff 0%, #f0f4ff 100%); border-left: 4px solid #667eea; padding: 24px; margin-bottom: 35px; border-radius: 6px;">
-                    <h2 style="margin: 0 0 12px 0; font-size: 18px; color: #333; font-weight: 600;">🧠 Weekly Practice Task</h2>
-                    <p style="color: #555; margin: 0; white-space: pre-line; line-height: 1.7;">{{ practice_task }}</p>
+                <div style="background: #f0fdff; border-left: 4px solid #00d4ff; padding: 24px; margin-bottom: 35px; border-radius: 6px;">
+                    <h2 style="margin: 0 0 12px 0; font-size: 18px; color: #000; font-weight: 700;">🧠 Weekly Practice Task</h2>
+                    <p style="color: #444; margin: 0; white-space: pre-line; line-height: 1.8;">{{ practice_task }}</p>
                 </div>
                 {% endif %}
 
                 {% for article in articles %}
                 <div style="margin-bottom: 35px; padding-bottom: 35px; border-bottom: 1px solid #f0f0f0;">
-                    <div style="display: inline-block; background: #667eea; color: white; font-size: 14px; font-weight: 600; padding: 4px 12px; border-radius: 4px; margin-bottom: 12px;">
+                    <div style="display: inline-block; background: #00d4ff; color: #000; font-size: 14px; font-weight: 700; padding: 5px 14px; border-radius: 4px; margin-bottom: 12px;">
                         {{ loop.index }}
                     </div>
 
-                    <h2 style="color: #222; margin: 0 0 10px 0; font-size: 22px; font-weight: 600; line-height: 1.3;">
-                        <a href="{{ article.url }}" style="color: #222; text-decoration: none;">
+                    <h2 style="color: #000; margin: 0 0 10px 0; font-size: 22px; font-weight: 700; line-height: 1.3;">
+                        <a href="{{ article.url }}" style="color: #000; text-decoration: none;">
                             {{ article.title }}
                         </a>
                     </h2>
 
-                    <p style="color: #999; font-size: 13px; margin: 8px 0; font-weight: 500;">
+                    <p style="color: #888; font-size: 13px; margin: 8px 0; font-weight: 500;">
                         📰 {{ article.source }}
                     </p>
 
-                    <p style="color: #555; margin: 15px 0; line-height: 1.7; font-size: 15px;">
+                    <p style="color: #444; margin: 15px 0; line-height: 1.8; font-size: 15px;">
                         {{ article.summary }}
                     </p>
 
                     <a href="{{ article.url }}" style="
                         display: inline-block;
-                        color: #667eea;
+                        color: #00d4ff;
                         text-decoration: none;
-                        font-weight: 600;
+                        font-weight: 700;
                         font-size: 14px;
-                        padding: 10px 20px;
-                        border: 2px solid #667eea;
+                        padding: 10px 24px;
+                        border: 2px solid #00d4ff;
                         border-radius: 6px;
-                        transition: all 0.3s;
+                        background: transparent;
                     ">
                         Read Full Article →
                     </a>
                 </div>
                 {% endfor %}
 
-                <div style="background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%); padding: 25px; border-radius: 8px; margin-top: 40px; text-align: center; border: 1px solid #e5e9ff;">
-                    <p style="margin: 0; color: #555; font-size: 15px; line-height: 1.6;">
-                        💡 <strong>Want more .NET insights?</strong><br>
-                        <a href="{{ wordpress_url }}" style="color: #667eea; text-decoration: none; font-weight: 600;">Visit betania.io</a>
+                <div style="background: #f0fdff; padding: 25px; border-radius: 8px; margin-top: 40px; text-align: center; border: 2px solid #00d4ff;">
+                    <p style="margin: 0; color: #000; font-size: 15px; line-height: 1.6; font-weight: 600;">
+                        💡 Want more .NET insights?<br>
+                        <a href="{{ wordpress_url }}" style="color: #00d4ff; text-decoration: none; font-weight: 700;">Visit betania.io</a>
                     </p>
                 </div>
             </div>
 
-            <div style="background: #fff; padding: 25px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                <p style="color: #999; font-size: 13px; margin: 0; line-height: 1.6;">
+            <div style="background: #fff; padding: 25px; text-align: center; border-top: 2px solid #f0f0f0;">
+                <p style="color: #888; font-size: 13px; margin: 0; line-height: 1.6;">
                     © {{ year }} Betania.io · All rights reserved<br>
-                    <span style="font-size: 11px;">Delivering quality .NET content to developers worldwide</span>
+                    <span style="font-size: 11px; color: #aaa;">Delivering quality .NET content to developers worldwide</span>
                 </p>
             </div>
         </body>

@@ -31,10 +31,18 @@ class Config:
     WORDPRESS_DB_USER = os.getenv("WORDPRESS_DB_USER")
     WORDPRESS_DB_PASSWORD = os.getenv("WORDPRESS_DB_PASSWORD")
 
+    # Email Configuration
+    EMAIL_PROVIDER = os.getenv("EMAIL_PROVIDER", "sendgrid")  # Options: "sendgrid" or "gmail"
+
     # SendGrid
     SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
     SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL", "newsletter@betania.io")
     SENDGRID_FROM_NAME = os.getenv("SENDGRID_FROM_NAME", "Betania Tech Newsletter")
+
+    # Gmail SMTP
+    GMAIL_EMAIL = os.getenv("GMAIL_EMAIL", "newsletter@betania.io")
+    GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD")  # App-specific password from Google
+    GMAIL_FROM_NAME = os.getenv("GMAIL_FROM_NAME", "Betania Tech Newsletter")
 
     # Application Settings
     ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
