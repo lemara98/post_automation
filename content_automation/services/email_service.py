@@ -177,74 +177,75 @@ class EmailService:
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
         </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #222; max-width: 600px; margin: 0 auto; padding: 20px; background: #ffffff;">
+        <body style="font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #2c2c2c; max-width: 600px; margin: 0 auto; padding: 0; background: #f8f8f8;">
             <!-- Header with Betania logo -->
-            <div style="background: #ffffff; padding: 50px 30px 40px; text-align: center; border-bottom: 3px solid #00d4ff;">
+            <div style="background: #ffffff; padding: 60px 40px 50px; text-align: center;">
                 <!-- Inline SVG Triangle Logo -->
-                <svg width="100" height="100" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 20px;">
-                    <path d="M250 50 L450 400 L50 400 Z" fill="none" stroke="#00d4ff" stroke-width="6" opacity="0.25"/>
-                    <path d="M250 100 L400 360 L100 360 Z" fill="none" stroke="#00d4ff" stroke-width="5" opacity="0.4"/>
-                    <path d="M250 150 L350 320 L150 320 Z" fill="none" stroke="#00d4ff" stroke-width="4" opacity="0.6"/>
-                    <path d="M250 200 L300 280 L200 280 Z" fill="none" stroke="#00d4ff" stroke-width="3.5" opacity="0.85"/>
-                    <path d="M200 280 L250 360 L150 360 Z" fill="none" stroke="#00d4ff" stroke-width="3.5" opacity="0.85"/>
-                    <path d="M300 280 L350 360 L250 360 Z" fill="none" stroke="#00d4ff" stroke-width="3.5" opacity="0.85"/>
-                    <line x1="60" y1="405" x2="440" y2="405" stroke="#00d4ff" stroke-width="1.5" opacity="0.3"/>
+                <svg width="100" height="100" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 24px;">
+                    <path d="M250 50 L450 400 L50 400 Z" fill="none" stroke="#2fd5c8" stroke-width="6" opacity="0.25"/>
+                    <path d="M250 100 L400 360 L100 360 Z" fill="none" stroke="#2fd5c8" stroke-width="5" opacity="0.4"/>
+                    <path d="M250 150 L350 320 L150 320 Z" fill="none" stroke="#2fd5c8" stroke-width="4" opacity="0.6"/>
+                    <path d="M250 200 L300 280 L200 280 Z" fill="none" stroke="#2fd5c8" stroke-width="3.5" opacity="0.85"/>
+                    <path d="M200 280 L250 360 L150 360 Z" fill="none" stroke="#2fd5c8" stroke-width="3.5" opacity="0.85"/>
+                    <path d="M300 280 L350 360 L250 360 Z" fill="none" stroke="#2fd5c8" stroke-width="3.5" opacity="0.85"/>
+                    <line x1="60" y1="405" x2="440" y2="405" stroke="#2fd5c8" stroke-width="1.5" opacity="0.3"/>
                 </svg>
 
-                <h1 style="color: #000000; margin: 0 0 10px 0; font-size: 38px; font-weight: 700; letter-spacing: 5px;">
+                <h1 style="font-family: 'Montserrat', sans-serif; color: #2c2c2c; margin: 0 0 12px 0; font-size: 39px; font-weight: 600; letter-spacing: 0px; line-height: 1.2;">
                     BETANIA
                 </h1>
-                <p style="color: #00d4ff; margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">
-                    Welcome to the Newsletter!
+                <p style="color: #2fd5c8; margin: 0; font-size: 14px; font-weight: 600; letter-spacing: 0px; text-transform: uppercase;">
+                    Welcome to the Newsletter
                 </p>
             </div>
 
-            <div style="background: #fff; padding: 40px 30px;">
-                <p style="font-size: 18px; color: #000; font-weight: 600; margin-top: 0;">Hi {name or 'there'},</p>
+            <div style="background: #fff; padding: 50px 40px;">
+                <p style="font-family: 'Open Sans', sans-serif; font-size: 18px; color: #2c2c2c; font-weight: 600; margin-top: 0; margin-bottom: 24px;">Hi {name or 'there'},</p>
 
-                <p style="font-size: 16px; color: #444; line-height: 1.8;">
+                <p style="font-family: 'Open Sans', sans-serif; font-size: 16px; color: #2c2c2c; line-height: 1.6; margin-bottom: 20px;">
                     Thanks for subscribing to the <strong>Betania Tech Newsletter</strong>! You're one step away from getting weekly .NET & software engineering insights delivered to your inbox.
                 </p>
 
-                <p style="font-size: 16px; color: #444; line-height: 1.8;">
+                <p style="font-family: 'Open Sans', sans-serif; font-size: 16px; color: #2c2c2c; line-height: 1.6; margin-bottom: 32px;">
                     Please confirm your email address by clicking the button below:
                 </p>
 
-                <div style="text-align: center; margin: 35px 0;">
+                <div style="text-align: center; margin: 40px 0;">
                     <a href="{confirmation_url}" style="
                         display: inline-block;
-                        background: #00d4ff;
-                        color: #000;
-                        padding: 16px 48px;
+                        background: #32d3ca;
+                        color: #ffffff;
+                        padding: 12px 24px;
                         text-decoration: none;
-                        border-radius: 6px;
-                        font-weight: 700;
+                        border-radius: 4px;
+                        font-family: 'Open Sans', sans-serif;
+                        font-weight: 600;
                         font-size: 16px;
-                        border: 2px solid #00d4ff;
                     ">
-                        ✓ Confirm Subscription
+                        Confirm Subscription
                     </a>
                 </div>
 
-                <p style="font-size: 14px; color: #888; line-height: 1.6;">
+                <p style="font-family: 'Open Sans', sans-serif; font-size: 14px; color: #2c2c2c; line-height: 1.6; margin-bottom: 8px;">
                     Or copy and paste this link into your browser:
                 </p>
-                <p style="color: #00d4ff; word-break: break-all; font-size: 13px; background: #f0fdff; padding: 12px; border-radius: 4px; border: 1px solid #00d4ff;">
+                <p style="font-family: 'Open Sans', sans-serif; color: #2fd5c8; word-break: break-all; font-size: 13px; background: #f8f8f8; padding: 12px; border-radius: 4px;">
                     {confirmation_url}
                 </p>
 
-                <hr style="border: none; border-top: 2px solid #f0f0f0; margin: 35px 0;">
+                <hr style="border: none; border-top: 1px solid #f8f8f8; margin: 40px 0;">
 
-                <p style="color: #888; font-size: 14px; line-height: 1.6;">
+                <p style="font-family: 'Open Sans', sans-serif; color: #2c2c2c; font-size: 14px; line-height: 1.6; opacity: 0.7;">
                     If you didn't subscribe to this newsletter, you can safely ignore this email.
                 </p>
             </div>
 
-            <div style="background: #fff; padding: 25px; text-align: center; border-top: 2px solid #f0f0f0;">
-                <p style="color: #888; font-size: 13px; margin: 0; line-height: 1.6;">
+            <div style="background: #104f4c; padding: 40px; text-align: center;">
+                <p style="font-family: 'Open Sans', sans-serif; color: #ffffff; font-size: 14px; margin: 0; line-height: 1.6;">
                     © 2024 Betania.io · All rights reserved<br>
-                    <span style="font-size: 11px; color: #aaa;">Delivering quality .NET content to developers worldwide</span>
+                    <span style="font-size: 12px; opacity: 0.8;">Delivering quality .NET content to developers worldwide</span>
                 </p>
             </div>
         </body>
@@ -281,94 +282,103 @@ class EmailService:
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
         </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #222; max-width: 600px; margin: 0 auto; padding: 20px; background: #ffffff;">
+        <body style="font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #2c2c2c; max-width: 600px; margin: 0 auto; padding: 0; background: #f8f8f8;">
             <!-- Header with Betania triangle logo -->
-            <div style="background: #ffffff; padding: 50px 30px 40px; text-align: center; border-bottom: 3px solid #00d4ff;">
+            <div style="background: #ffffff; padding: 60px 40px 50px; text-align: center;">
                 <!-- Inline SVG Triangle Logo -->
-                <svg width="100" height="100" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 20px;">
+                <svg width="100" height="100" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 24px;">
                     <!-- Outer triangle with tech effect -->
-                    <path d="M250 50 L450 400 L50 400 Z" fill="none" stroke="#00d4ff" stroke-width="6" opacity="0.25"/>
+                    <path d="M250 50 L450 400 L50 400 Z" fill="none" stroke="#2fd5c8" stroke-width="6" opacity="0.25"/>
                     <!-- Second triangle -->
-                    <path d="M250 100 L400 360 L100 360 Z" fill="none" stroke="#00d4ff" stroke-width="5" opacity="0.4"/>
+                    <path d="M250 100 L400 360 L100 360 Z" fill="none" stroke="#2fd5c8" stroke-width="5" opacity="0.4"/>
                     <!-- Third triangle -->
-                    <path d="M250 150 L350 320 L150 320 Z" fill="none" stroke="#00d4ff" stroke-width="4" opacity="0.6"/>
+                    <path d="M250 150 L350 320 L150 320 Z" fill="none" stroke="#2fd5c8" stroke-width="4" opacity="0.6"/>
                     <!-- Inner Triforce triangles -->
-                    <path d="M250 200 L300 280 L200 280 Z" fill="none" stroke="#00d4ff" stroke-width="3.5" opacity="0.85"/>
-                    <path d="M200 280 L250 360 L150 360 Z" fill="none" stroke="#00d4ff" stroke-width="3.5" opacity="0.85"/>
-                    <path d="M300 280 L350 360 L250 360 Z" fill="none" stroke="#00d4ff" stroke-width="3.5" opacity="0.85"/>
+                    <path d="M250 200 L300 280 L200 280 Z" fill="none" stroke="#2fd5c8" stroke-width="3.5" opacity="0.85"/>
+                    <path d="M200 280 L250 360 L150 360 Z" fill="none" stroke="#2fd5c8" stroke-width="3.5" opacity="0.85"/>
+                    <path d="M300 280 L350 360 L250 360 Z" fill="none" stroke="#2fd5c8" stroke-width="3.5" opacity="0.85"/>
                     <!-- Circuit lines -->
-                    <line x1="60" y1="405" x2="440" y2="405" stroke="#00d4ff" stroke-width="1.5" opacity="0.3"/>
+                    <line x1="60" y1="405" x2="440" y2="405" stroke="#2fd5c8" stroke-width="1.5" opacity="0.3"/>
                 </svg>
 
-                <h1 style="color: #000000; margin: 0 0 10px 0; font-size: 38px; font-weight: 700; letter-spacing: 5px;">
+                <h1 style="font-family: 'Montserrat', sans-serif; color: #2c2c2c; margin: 0 0 12px 0; font-size: 39px; font-weight: 600; letter-spacing: 0px; line-height: 1.2;">
                     BETANIA
                 </h1>
-                <p style="color: #00d4ff; margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">
+                <p style="font-family: 'Open Sans', sans-serif; color: #2fd5c8; margin: 0; font-size: 14px; font-weight: 600; letter-spacing: 0px; text-transform: uppercase;">
                     Your Weekly .NET & Software Engineering Digest
                 </p>
             </div>
 
-            <div style="background: #fff; padding: 40px 30px;">
-                <p style="font-size: 16px; color: #444; line-height: 1.8; margin-top: 0;">{{ intro }}</p>
-
-                <hr style="border: none; border-top: 2px solid #f0f0f0; margin: 35px 0;">
+            <div style="background: #fff; padding: 50px 40px;">
+                <p style="font-family: 'Open Sans', sans-serif; font-size: 16px; color: #2c2c2c; line-height: 1.6; margin-top: 0; margin-bottom: 32px;">{{ intro }}</p>
 
                 {% if practice_task %}
-                <div style="background: #f0fdff; border-left: 4px solid #00d4ff; padding: 24px; margin-bottom: 35px; border-radius: 6px;">
-                    <h2 style="margin: 0 0 12px 0; font-size: 18px; color: #000; font-weight: 700;">🧠 Weekly Practice Task</h2>
-                    <p style="color: #444; margin: 0; white-space: pre-line; line-height: 1.8;">{{ practice_task }}</p>
+                <div style="background: #f8f8f8; padding: 30px; margin-bottom: 40px; border-radius: 4px; border-left: 4px solid #2fd5c8;">
+                    <h2 style="font-family: 'Montserrat', sans-serif; margin: 0 0 16px 0; font-size: 20px; color: #2c2c2c; font-weight: 600; line-height: 1.3;">Weekly Practice Task</h2>
+                    <p style="font-family: 'Open Sans', sans-serif; color: #2c2c2c; margin: 0; white-space: pre-line; line-height: 1.6; font-size: 15px;">{{ practice_task }}</p>
                 </div>
                 {% endif %}
 
-                {% for article in articles %}
-                <div style="margin-bottom: 35px; padding-bottom: 35px; border-bottom: 1px solid #f0f0f0;">
-                    <div style="display: inline-block; background: #00d4ff; color: #000; font-size: 14px; font-weight: 700; padding: 5px 14px; border-radius: 4px; margin-bottom: 12px;">
-                        {{ loop.index }}
-                    </div>
+                <hr style="border: none; border-top: 1px solid #f8f8f8; margin: 40px 0;">
 
-                    <h2 style="color: #000; margin: 0 0 10px 0; font-size: 22px; font-weight: 700; line-height: 1.3;">
-                        <a href="{{ article.url }}" style="color: #000; text-decoration: none;">
+                {% for article in articles %}
+                <div style="margin-bottom: 40px; padding-bottom: 40px; {% if not loop.last %}border-bottom: 1px solid #f8f8f8;{% endif %}">
+                    <h2 style="font-family: 'Montserrat', sans-serif; color: #2c2c2c; margin: 0 0 12px 0; font-size: 24px; font-weight: 600; line-height: 1.3;">
+                        <a href="{{ article.url }}" style="color: #2c2c2c; text-decoration: none;">
                             {{ article.title }}
                         </a>
                     </h2>
 
-                    <p style="color: #888; font-size: 13px; margin: 8px 0; font-weight: 500;">
-                        📰 {{ article.source }}
+                    <p style="font-family: 'Open Sans', sans-serif; color: #2c2c2c; font-size: 13px; margin: 0 0 16px 0; font-weight: 400; opacity: 0.7;">
+                        {{ article.source }}
                     </p>
 
-                    <p style="color: #444; margin: 15px 0; line-height: 1.8; font-size: 15px;">
+                    <p style="font-family: 'Open Sans', sans-serif; color: #2c2c2c; margin: 0 0 20px 0; line-height: 1.6; font-size: 16px;">
                         {{ article.summary }}
                     </p>
 
                     <a href="{{ article.url }}" style="
                         display: inline-block;
-                        color: #00d4ff;
+                        background: #32d3ca;
+                        color: #ffffff;
                         text-decoration: none;
-                        font-weight: 700;
+                        font-family: 'Open Sans', sans-serif;
+                        font-weight: 600;
                         font-size: 14px;
-                        padding: 10px 24px;
-                        border: 2px solid #00d4ff;
-                        border-radius: 6px;
-                        background: transparent;
+                        padding: 12px 24px;
+                        border-radius: 4px;
                     ">
-                        Read Full Article →
+                        Read Article
                     </a>
                 </div>
                 {% endfor %}
 
-                <div style="background: #f0fdff; padding: 25px; border-radius: 8px; margin-top: 40px; text-align: center; border: 2px solid #00d4ff;">
-                    <p style="margin: 0; color: #000; font-size: 15px; line-height: 1.6; font-weight: 600;">
-                        💡 Want more .NET insights?<br>
-                        <a href="{{ wordpress_url }}" style="color: #00d4ff; text-decoration: none; font-weight: 700;">Visit betania.io</a>
+                <div style="background: #f8f8f8; padding: 30px; border-radius: 4px; margin-top: 40px; text-align: center;">
+                    <p style="font-family: 'Open Sans', sans-serif; margin: 0 0 16px 0; color: #2c2c2c; font-size: 16px; line-height: 1.6; font-weight: 600;">
+                        Want more .NET insights?
                     </p>
+                    <a href="{{ wordpress_url }}" style="
+                        display: inline-block;
+                        background: #32d3ca;
+                        color: #ffffff;
+                        text-decoration: none;
+                        font-family: 'Open Sans', sans-serif;
+                        font-weight: 600;
+                        font-size: 16px;
+                        padding: 12px 24px;
+                        border-radius: 4px;
+                    ">
+                        Visit betania.io
+                    </a>
                 </div>
             </div>
 
-            <div style="background: #fff; padding: 25px; text-align: center; border-top: 2px solid #f0f0f0;">
-                <p style="color: #888; font-size: 13px; margin: 0; line-height: 1.6;">
+            <div style="background: #104f4c; padding: 40px; text-align: center;">
+                <p style="font-family: 'Open Sans', sans-serif; color: #ffffff; font-size: 14px; margin: 0; line-height: 1.6;">
                     © {{ year }} Betania.io · All rights reserved<br>
-                    <span style="font-size: 11px; color: #aaa;">Delivering quality .NET content to developers worldwide</span>
+                    <span style="font-size: 12px; opacity: 0.8;">Delivering quality .NET content to developers worldwide</span>
                 </p>
             </div>
         </body>
