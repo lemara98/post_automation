@@ -63,11 +63,28 @@ def main(mytimer: func.TimerRequest) -> None:
 
         logger.info(f"✓ {len(new_articles)} new articles to process")
 
-        # Step 3: Process articles (limit to MAX_ARTICLES_PER_DAY)
+        # Step 3: AI ranks articles to find the best ones (take top 3)
+        logger.info("\n🤖 AI is ranking articles to find the best content...")
+        top_articles = ai_generator.rank_articles_for_newsletter(
+            articles=new_articles,
+            top_n=min(3, len(new_articles))  # Get top 3 or fewer if not enough
+        )
+        logger.info(f"✓ AI selected top {len(top_articles)} articles")
+
+        # Step 4: Process articles (best one published, others as draft)
         processed_count = 0
-        for article in new_articles[:Config.MAX_ARTICLES_PER_DAY]:
+        published_count = 0
+        draft_count = 0
+
+        for index, article in enumerate(top_articles):
             try:
-                logger.info(f"\n📝 Processing: {article.title}")
+                # Determine status: first article (best) is published, others are drafts
+                is_best_article = (index == 0)
+                status = 'publish' if is_best_article else 'draft'
+                status_label = "PUBLISHED ✨" if is_best_article else "DRAFT (needs review)"
+
+                logger.info(f"\n📝 Processing #{index + 1}: {article.title}")
+                logger.info(f"   Status: {status_label}")
 
                 # Generate blog post with AI
                 logger.info("  🤖 Generating blog post with AI...")
@@ -85,7 +102,7 @@ def main(mytimer: func.TimerRequest) -> None:
                 wp_post = wp_client.create_post(
                     title=blog_post['title'],
                     content=blog_post['content'],
-                    status='draft',  # Change to 'publish' for auto-publish
+                    status=status,
                     excerpt=blog_post['excerpt'],
                     tags=blog_post['tags'],
                     categories=[category]
@@ -102,12 +119,18 @@ def main(mytimer: func.TimerRequest) -> None:
                     tags=blog_post['tags']
                 )
 
-                # Generate and queue LinkedIn post
-                logger.info("  💼 Generating LinkedIn post...")
-                linkedin_post = ai_generator.generate_linkedin_post(article)
-                linkedin_model.add_to_queue(article_id, linkedin_post)
+                # Generate and queue LinkedIn post (only for published article)
+                if is_best_article:
+                    logger.info("  💼 Generating LinkedIn post...")
+                    linkedin_post = ai_generator.generate_linkedin_post(article)
+                    linkedin_model.add_to_queue(article_id, linkedin_post)
 
                 processed_count += 1
+                if is_best_article:
+                    published_count += 1
+                else:
+                    draft_count += 1
+
                 logger.info(f"  ✅ Successfully processed!")
 
             except Exception as e:
@@ -115,9 +138,10 @@ def main(mytimer: func.TimerRequest) -> None:
                 continue
 
         logger.info(f"\n🎉 Daily content generation completed!")
-        logger.info(f"   Processed: {processed_count}/{len(new_articles)} articles")
-        logger.info(f"   Published to WordPress: {processed_count}")
-        logger.info(f"   Queued for LinkedIn: {processed_count}")
+        logger.info(f"   Processed: {processed_count} articles")
+        logger.info(f"   ✅ Published: {published_count} (best article)")
+        logger.info(f"   📝 Drafts: {draft_count} (awaiting review)")
+        logger.info(f"   💼 Queued for LinkedIn: {published_count}")
 
     except Exception as e:
         logger.error(f"❌ Fatal error in daily content generation: {str(e)}")
