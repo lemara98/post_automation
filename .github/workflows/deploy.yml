@@ -83,6 +83,13 @@ jobs:
         working-directory: ./terraform
         run: terraform init
 
+      - name: Import existing resource group (if exists)
+        working-directory: ./terraform
+        continue-on-error: true
+        run: |
+          # Try to import the resource group if it exists but isn't in state
+          terraform import azurerm_resource_group.main /subscriptions/94ad4fb7-74b6-4e4f-ab13-bb6e56154fba/resourceGroups/betania-content-prod-rg || true
+
       - name: Terraform Plan
         working-directory: ./terraform
         env:
