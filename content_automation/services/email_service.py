@@ -172,56 +172,100 @@ class EmailService:
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background: #f4f4f4;">
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-                <h1 style="color: white; margin: 0;">Betania Tech Newsletter</h1>
-                <p style="color: #fff; margin: 10px 0 0 0;">Your Weekly Software Engineering Digest</p>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5;">
+            <!-- Header with background logo -->
+            <div style="
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%),
+                            url('https://raw.githubusercontent.com/yourusername/betania-assets/main/logo-bg.png') center/cover;
+                background-color: #667eea;
+                padding: 60px 30px;
+                text-align: center;
+                border-radius: 12px 12px 0 0;
+                position: relative;
+                overflow: hidden;
+            ">
+                <!-- Subtle pattern overlay -->
+                <div style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE4YzMuMzEgMCA2IDIuNjkgNiA2cy0yLjY5IDYtNiA2LTYtMi42OS02LTYgMi42OS02IDYtNiIvPjwvZz48L2c+PC9zdmc+');
+                    opacity: 0.3;
+                "></div>
+
+                <!-- Logo (optional - you can add an actual logo image URL) -->
+                <!-- <img src="https://betania.io/logo.png" alt="Betania" style="width: 80px; height: auto; margin-bottom: 15px; position: relative; z-index: 1;" /> -->
+
+                <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 600; letter-spacing: -0.5px; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    BETANIA
+                </h1>
+                <p style="color: rgba(255,255,255,0.95); margin: 8px 0 0 0; font-size: 15px; font-weight: 400; letter-spacing: 0.5px; position: relative; z-index: 1;">
+                    Your Weekly .NET & Software Engineering Digest
+                </p>
             </div>
 
-            <div style="background: #fff; padding: 30px; border: 1px solid #ddd; border-top: none;">
-                <p style="font-size: 16px; color: #555;">{{ intro }}</p>
+            <div style="background: #fff; padding: 40px 30px; border: 1px solid #e5e5e5; border-top: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <p style="font-size: 16px; color: #555; line-height: 1.7; margin-top: 0;">{{ intro }}</p>
 
-                <hr style="border: none; border-top: 2px solid #667eea; margin: 30px 0;">
+                <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 35px 0;">
 
                 {% if practice_task %}
-                <div style="background: #f9fafb; border-left: 4px solid #667eea; padding: 20px; margin-bottom: 30px; border-radius: 4px;">
-                    <h2 style="margin: 0 0 10px 0; font-size: 18px; color: #333;">🧠 Weekly Practice Task</h2>
-                    <p style="color: #555; margin: 0; white-space: pre-line;">{{ practice_task }}</p>
+                <div style="background: linear-gradient(to right, #f8f9ff 0%, #f0f4ff 100%); border-left: 4px solid #667eea; padding: 24px; margin-bottom: 35px; border-radius: 6px;">
+                    <h2 style="margin: 0 0 12px 0; font-size: 18px; color: #333; font-weight: 600;">🧠 Weekly Practice Task</h2>
+                    <p style="color: #555; margin: 0; white-space: pre-line; line-height: 1.7;">{{ practice_task }}</p>
                 </div>
                 {% endif %}
 
                 {% for article in articles %}
-                <div style="margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #eee;">
-                    <h2 style="color: #333; margin: 0 0 10px 0; font-size: 20px;">
-                        <a href="{{ article.url }}" style="color: #667eea; text-decoration: none;">
-                            {{ loop.index }}. {{ article.title }}
+                <div style="margin-bottom: 35px; padding-bottom: 35px; border-bottom: 1px solid #f0f0f0;">
+                    <div style="display: inline-block; background: #667eea; color: white; font-size: 14px; font-weight: 600; padding: 4px 12px; border-radius: 4px; margin-bottom: 12px;">
+                        {{ loop.index }}
+                    </div>
+
+                    <h2 style="color: #222; margin: 0 0 10px 0; font-size: 22px; font-weight: 600; line-height: 1.3;">
+                        <a href="{{ article.url }}" style="color: #222; text-decoration: none;">
+                            {{ article.title }}
                         </a>
                     </h2>
 
-                    <p style="color: #999; font-size: 13px; margin: 5px 0;">
-                        Source: {{ article.source }}
+                    <p style="color: #999; font-size: 13px; margin: 8px 0; font-weight: 500;">
+                        📰 {{ article.source }}
                     </p>
 
-                    <p style="color: #555; margin: 15px 0;">
+                    <p style="color: #555; margin: 15px 0; line-height: 1.7; font-size: 15px;">
                         {{ article.summary }}
                     </p>
 
-                    <a href="{{ article.url }}" style="color: #667eea; text-decoration: none; font-weight: bold;">
-                        Read more →
+                    <a href="{{ article.url }}" style="
+                        display: inline-block;
+                        color: #667eea;
+                        text-decoration: none;
+                        font-weight: 600;
+                        font-size: 14px;
+                        padding: 10px 20px;
+                        border: 2px solid #667eea;
+                        border-radius: 6px;
+                        transition: all 0.3s;
+                    ">
+                        Read Full Article →
                     </a>
                 </div>
                 {% endfor %}
 
-                <div style="background: #f9f9f9; padding: 20px; border-radius: 5px; margin-top: 30px; text-align: center;">
-                    <p style="margin: 0; color: #666;">
-                        💡 Want more tech insights? Visit <a href="{{ wordpress_url }}" style="color: #667eea; text-decoration: none;">betania.io</a>
+                <div style="background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%); padding: 25px; border-radius: 8px; margin-top: 40px; text-align: center; border: 1px solid #e5e9ff;">
+                    <p style="margin: 0; color: #555; font-size: 15px; line-height: 1.6;">
+                        💡 <strong>Want more .NET insights?</strong><br>
+                        <a href="{{ wordpress_url }}" style="color: #667eea; text-decoration: none; font-weight: 600;">Visit betania.io</a>
                     </p>
                 </div>
             </div>
 
-            <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-top: none; border-radius: 0 0 10px 10px; text-align: center;">
-                <p style="color: #999; font-size: 12px; margin: 0;">
-                    © {{ year }} Betania.io - All rights reserved
+            <div style="background: #fff; padding: 25px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 12px 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <p style="color: #999; font-size: 13px; margin: 0; line-height: 1.6;">
+                    © {{ year }} Betania.io · All rights reserved<br>
+                    <span style="font-size: 11px;">Delivering quality .NET content to developers worldwide</span>
                 </p>
             </div>
         </body>

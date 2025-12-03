@@ -46,16 +46,27 @@ This will:
 
 ### 3. Run Weekly Newsletter
 
+**Setup test subscriber (first time only):**
 ```bash
 source venv/bin/activate
 cd content_automation
+python add_test_subscriber.py
+```
+
+**Test newsletter (dry run - no emails sent):**
+```bash
+python test_newsletter_dry_run.py
+```
+
+**Send actual newsletter:**
+```bash
 python functions/weekly_newsletter/__init__.py
 ```
 
 This will:
-- Select top 5 articles of the week
-- Generate newsletter email
-- Send to all subscribers
+- Select top 5 articles from the past week
+- Generate newsletter intro and practice task with AI
+- Send to all active, confirmed subscribers
 
 ## Test Everything
 

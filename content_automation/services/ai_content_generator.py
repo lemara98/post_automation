@@ -308,6 +308,62 @@ Write 3-6 sentences. Start with a short title like: "Weekly Practice: [short des
             logger.error(f"✗ Error generating practice task: {str(e)}")
             return "Weekly Practice: Take a small piece of code you wrote recently and refactor it using a modern .NET feature (such as pattern matching, records, or LINQ). Focus on making the code easier to read and reason about, and write down what changed and why."
 
+    def suggest_category(self, title: str, content_excerpt: str) -> str:
+        """
+        Use AI to suggest the best WordPress category for an article
+
+        Args:
+            title: Article title
+            content_excerpt: Brief excerpt of the content
+
+        Returns:
+            Category name from Config.BLOG_CATEGORIES
+        """
+        from config import Config
+
+        categories_list = "\n".join([f"- {cat}" for cat in Config.BLOG_CATEGORIES])
+
+        prompt = f"""You are categorizing a technical blog post for a .NET development blog.
+
+Article Title: {title}
+Content Preview: {content_excerpt[:300]}
+
+Available Categories:
+{categories_list}
+
+Rules:
+- ".NET Development" includes: ASP.NET Core, C#, web APIs, Blazor, Entity Framework, general .NET features
+- "Performance & Optimization" includes: benchmarks, memory optimization, speed improvements, profiling
+- "Architecture & Patterns" includes: Clean Architecture, DDD, SOLID, design patterns, project structure
+- "Cloud & DevOps" includes: Azure, Docker, Kubernetes, CI/CD, deployment, infrastructure
+
+Select the MOST appropriate single category. Respond with ONLY the category name, nothing else."""
+
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are an expert at categorizing technical content."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.3,
+                max_tokens=50
+            )
+
+            category = response.choices[0].message.content.strip()
+
+            # Validate category
+            if category in Config.BLOG_CATEGORIES:
+                logger.info(f"✓ AI suggested category: {category}")
+                return category
+            else:
+                logger.warning(f"AI suggested invalid category '{category}', defaulting to .NET Development")
+                return ".NET Development"
+
+        except Exception as e:
+            logger.error(f"✗ Error suggesting category: {str(e)}")
+            return ".NET Development"  # Default fallback
+
     def _parse_blog_response(self, response: str, source_url: str) -> Dict[str, str]:
         """Parse the AI-generated blog post response"""
         sections = {
@@ -350,13 +406,18 @@ Write 3-6 sentences. Start with a short title like: "Weekly Practice: [short des
         sections['excerpt'] = sections['excerpt'].strip()
         raw_content = sections['content'].strip()
 
+        # Convert markdown to HTML
+        from markdown import markdown
+        html_body = markdown(raw_content, extensions=['extra', 'nl2br', 'sane_lists'])
+
         # Wrap content in nicer HTML structure for WordPress
         html_content = f"""<div class="betania-article">
-<p class="lead">{sections['excerpt']}</p>
-{raw_content}
+<p class="lead" style="font-size: 1.2em; color: #666; margin-bottom: 2em;">{sections['excerpt']}</p>
 
-<hr />
-<p><strong>Source:</strong> <a href="{source_url}">{source_url}</a></p>
+{html_body}
+
+<hr style="margin: 2em 0; border: none; border-top: 1px solid #eee;" />
+<p style="color: #999; font-size: 0.9em;"><strong>Source:</strong> <a href="{source_url}" target="_blank" rel="noopener noreferrer">{source_url}</a></p>
 </div>"""
 
         sections['content'] = html_content

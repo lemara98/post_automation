@@ -73,14 +73,22 @@ def main(mytimer: func.TimerRequest) -> None:
                 logger.info("  🤖 Generating blog post with AI...")
                 blog_post = ai_generator.generate_blog_post(article)
 
+                # AI suggests category based on content
+                logger.info("  🏷️  AI categorizing content...")
+                category = ai_generator.suggest_category(
+                    title=blog_post['title'],
+                    content_excerpt=blog_post['excerpt']
+                )
+
                 # Publish to WordPress
-                logger.info("  📤 Publishing to WordPress...")
+                logger.info(f"  📤 Publishing to WordPress (Category: {category})...")
                 wp_post = wp_client.create_post(
                     title=blog_post['title'],
                     content=blog_post['content'],
-                    status='publish',  # Change to 'draft' if you want to review first
+                    status='draft',  # Change to 'publish' for auto-publish
                     excerpt=blog_post['excerpt'],
-                    tags=blog_post['tags']
+                    tags=blog_post['tags'],
+                    categories=[category]
                 )
 
                 # Track in database

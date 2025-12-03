@@ -41,6 +41,14 @@ class Config:
     MAX_ARTICLES_PER_DAY = int(os.getenv("MAX_ARTICLES_PER_DAY", "5"))
     MAX_NEWSLETTER_ARTICLES = int(os.getenv("MAX_NEWSLETTER_ARTICLES", "5"))
 
+    # WordPress Categories
+    BLOG_CATEGORIES = [
+        ".NET Development",           # General .NET, ASP.NET Core, C#, web dev
+        "Performance & Optimization", # Performance tips, benchmarks, tuning
+        "Architecture & Patterns",    # Clean architecture, DDD, design patterns
+        "Cloud & DevOps"             # Azure, deployment, CI/CD, containers
+    ]
+
     # RSS Feeds - High-quality .NET content sources
     RSS_FEEDS = [
         # Top .NET Blogs - Clean Architecture, Patterns, Best Practices (WORKING)
