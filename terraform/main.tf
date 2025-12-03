@@ -126,13 +126,13 @@ resource "azurerm_application_insights" "main" {
   tags                = local.tags
 }
 
-# App Service Plan (Consumption)
+# App Service Plan (Basic tier - more compatible with free/trial subscriptions)
 resource "azurerm_service_plan" "functions" {
   name                = "${local.resource_prefix}-plan"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   os_type             = "Linux"
-  sku_name            = "Y1" # Consumption tier (serverless)
+  sku_name            = "B1" # Basic tier (avoid consumption plan quota issues)
   tags                = local.tags
 }
 
