@@ -178,8 +178,8 @@ resource "azurerm_linux_function_app" "main" {
     "SENDGRID_API_KEY"       = var.sendgrid_api_key
     "SENDGRID_FROM_EMAIL"    = "newsletter@betania.io"
     "SENDGRID_FROM_NAME"     = "Betania Tech Newsletter"
-    "MAX_ARTICLES_PER_DAY"   = "5"
-    "MAX_NEWSLETTER_ARTICLES" = "5"
+    "MAX_ARTICLES_PER_DAY"   = "1"
+    "MAX_NEWSLETTER_ARTICLES" = "3"
     "ENVIRONMENT"            = var.environment
   }
 

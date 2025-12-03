@@ -38,8 +38,8 @@ class Config:
 
     # Application Settings
     ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
-    MAX_ARTICLES_PER_DAY = int(os.getenv("MAX_ARTICLES_PER_DAY", "5"))
-    MAX_NEWSLETTER_ARTICLES = int(os.getenv("MAX_NEWSLETTER_ARTICLES", "5"))
+    MAX_ARTICLES_PER_DAY = int(os.getenv("MAX_ARTICLES_PER_DAY", "1"))
+    MAX_NEWSLETTER_ARTICLES = int(os.getenv("MAX_NEWSLETTER_ARTICLES", "3"))
 
     # WordPress Categories
     BLOG_CATEGORIES = [
