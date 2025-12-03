@@ -109,7 +109,7 @@ resource "azurerm_resource_group" "main" {
 
 # Storage Account for Azure Functions
 resource "azurerm_storage_account" "functions" {
-  name                     = replace("${var.project_name}${var.environment}st", "-", "")
+  name                     = "betaniaprodst"  # 13 characters (well under 24 limit)
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
   account_tier             = "Standard"
