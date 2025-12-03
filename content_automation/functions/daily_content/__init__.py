@@ -63,11 +63,11 @@ def main(mytimer: func.TimerRequest) -> None:
 
         logger.info(f"✓ {len(new_articles)} new articles to process")
 
-        # Step 3: AI ranks articles to find the best ones (take top 3)
-        logger.info("\n🤖 AI is ranking articles to find the best content...")
+        # Step 3: AI ranks articles to find the best ones
+        logger.info(f"\n🤖 AI is ranking articles to find the best {Config.MAX_DAILY_ARTICLES} articles...")
         top_articles = ai_generator.rank_articles_for_newsletter(
             articles=new_articles,
-            top_n=min(3, len(new_articles))  # Get top 3 or fewer if not enough
+            top_n=min(Config.MAX_DAILY_ARTICLES, len(new_articles))
         )
         logger.info(f"✓ AI selected top {len(top_articles)} articles")
 

@@ -46,6 +46,7 @@ class Config:
 
     # Application Settings
     ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+    MAX_DAILY_ARTICLES = int(os.getenv("MAX_DAILY_ARTICLES", "3"))  # AI ranks this many, publishes best one
     MAX_NEWSLETTER_ARTICLES = int(os.getenv("MAX_NEWSLETTER_ARTICLES", "3"))
 
     # WordPress Categories
