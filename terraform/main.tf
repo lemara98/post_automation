@@ -126,13 +126,13 @@ resource "azurerm_application_insights" "main" {
   tags                = local.tags
 }
 
-# App Service Plan (Free tier for Azure trial subscriptions)
+# App Service Plan (Consumption plan for serverless Azure Functions)
 resource "azurerm_service_plan" "functions" {
   name                = "${local.resource_prefix}-plan"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   os_type             = "Linux"
-  sku_name            = "F1" # Free tier (works with trial subscriptions)
+  sku_name            = "Y1" # Consumption (Serverless) - pay per execution, works with trial subscriptions
   tags                = local.tags
 }
 
