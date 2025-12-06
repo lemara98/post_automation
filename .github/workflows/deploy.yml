@@ -86,6 +86,15 @@ jobs:
       - name: Import existing resource group (if exists)
         working-directory: ./terraform
         continue-on-error: true
+        env:
+          TF_VAR_openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          TF_VAR_wordpress_username: ${{ secrets.WORDPRESS_USERNAME }}
+          TF_VAR_wordpress_password: ${{ secrets.WORDPRESS_PASSWORD }}
+          TF_VAR_wordpress_db_host: ${{ secrets.WORDPRESS_DB_HOST }}
+          TF_VAR_wordpress_db_name: ${{ secrets.WORDPRESS_DB_NAME }}
+          TF_VAR_wordpress_db_user: ${{ secrets.WORDPRESS_DB_USER }}
+          TF_VAR_wordpress_db_password: ${{ secrets.WORDPRESS_DB_PASSWORD }}
+          TF_VAR_sendgrid_api_key: ${{ secrets.SENDGRID_API_KEY }}
         run: |
           # Try to import the resource group if it exists but isn't in state
           terraform import azurerm_resource_group.main /subscriptions/94ad4fb7-74b6-4e4f-ab13-bb6e56154fba/resourceGroups/betania-content-prod-rg || true
